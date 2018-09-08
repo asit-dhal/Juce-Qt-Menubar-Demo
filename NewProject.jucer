@@ -6,6 +6,8 @@
       <FILE id="MInLNc" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="KdrrDE" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
+      <FILE id="WRMSOE" name="MenuIDs.h" compile="0" resource="0" file="Source/MenuIDs.h"/>
+      <FILE id="oLrIFk" name="MenuIDs.cpp" compile="1" resource="0" file="Source/MenuIDs.cpp"/>
       <FILE id="yZm4Xj" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
   </MAINGROUP>
