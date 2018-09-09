@@ -72,24 +72,25 @@ PopupMenu MainComponent::getMenuForIndex(int index, const String& name)
     }
     else if (name == "Edit")
     {
-        menu.addItem(menuEntryToId(MenuEntry::EditUndo), menuEntryToString(MenuEntry::EditUndo));
-        menu.addItem(menuEntryToId(MenuEntry::EditRedo), menuEntryToString(MenuEntry::EditRedo));
+
+        menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditUndo));
+        menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditRedo));
         menu.addSeparator();
         
-        menu.addItem(menuEntryToId(MenuEntry::EditCut), menuEntryToString(MenuEntry::EditCut));
-        menu.addItem(menuEntryToId(MenuEntry::EditCopy), menuEntryToString(MenuEntry::EditCopy));
-        menu.addItem(menuEntryToId(MenuEntry::EditPaste), menuEntryToString(MenuEntry::EditPaste));
+        menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditCut));
+        menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditCopy));
+        menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditPaste));
         menu.addSeparator();
         
         PopupMenu formatSubMenu;
-        formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatBold), menuEntryToString(MenuEntry::FormatBold));
-        formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatItalic), menuEntryToString(MenuEntry::FormatItalic));
-        menu.addSeparator();
+        formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatBold));
+        formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatItalic));
+        formatSubMenu.addSeparator();
         formatSubMenu.addSectionHeader("Alignment");
-        formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatLeftAlign), menuEntryToString(MenuEntry::FormatLeftAlign));
-        formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatRightAlign), menuEntryToString(MenuEntry::FormatRightAlign));
-        formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatJustify), menuEntryToString(MenuEntry::FormatJustify));
-        formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatCenter), menuEntryToString(MenuEntry::FormatCenter));
+        formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatLeftAlign));
+        formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatRightAlign));
+        formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatJustify));
+        formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatCenter));
         formatSubMenu.addSeparator();
         formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatSetLineSpacing), menuEntryToString(MenuEntry::FormatSetLineSpacing));
         formatSubMenu.addItem(menuEntryToId(MenuEntry::FormatSetParagraphSpacing), menuEntryToString(MenuEntry::FormatSetParagraphSpacing));
@@ -108,28 +109,16 @@ void MainComponent::menuItemSelected(int menuID, int index)
 {
     switch(static_cast<MenuEntry>(menuID))
     {
-    case MenuEntry::EditUndo:
-        statusBarLabel.setText("Edit->Undo invoked", dontSendNotification);
+    case MenuEntry::FormatSetLineSpacing:
+        statusBarLabel.setText("Edit->Format->SetLineSpacing invoked", dontSendNotification);
         break;
-    case MenuEntry::EditRedo:
-        statusBarLabel.setText("Edit->Redo invoked", dontSendNotification);
+    case MenuEntry::FormatSetParagraphSpacing:
+        statusBarLabel.setText("Edit->Format->SetParagraphSpacing invoked", dontSendNotification);
         break;
-    case MenuEntry::EditCut:
-        statusBarLabel.setText("Edit->Cut invoked", dontSendNotification);
-        break;
-    case MenuEntry::EditCopy:
-        statusBarLabel.setText("Edit->Copy invoked", dontSendNotification);
-        break;
-    case MenuEntry::EditPaste:
-        statusBarLabel.setText("Edit->Paste invoked", dontSendNotification);
-        break;
-    case MenuEntry::EditFormat:
-        statusBarLabel.setText("Edit->Format invoked", dontSendNotification);
-        break;
-   case MenuEntry::HelpAbout:
+    case MenuEntry::HelpAbout:
         statusBarLabel.setText("Help->About invoked", dontSendNotification);
         break;
-   case MenuEntry::HelpAboutQt:
+    case MenuEntry::HelpAboutQt:
         statusBarLabel.setText("Help->AboutQt invoked", dontSendNotification);
         break;
     }
@@ -142,11 +131,24 @@ ApplicationCommandTarget* MainComponent::getNextCommandTarget()
 
 void MainComponent::getAllCommands(Array<CommandID>& c)
 {
-    Array<CommandID> commands { menuEntryToId(MenuEntry::FileNew),
-                                menuEntryToId(MenuEntry::FileOpen),
-                                menuEntryToId(MenuEntry::FileSave),
-                                menuEntryToId(MenuEntry::FilePrint),
-                                menuEntryToId(MenuEntry::FileExit) };
+    Array<CommandID> commands { 
+        menuEntryToId(MenuEntry::FileNew),
+        menuEntryToId(MenuEntry::FileOpen),
+        menuEntryToId(MenuEntry::FileSave),
+        menuEntryToId(MenuEntry::FilePrint),
+        menuEntryToId(MenuEntry::FileExit),
+        menuEntryToId(MenuEntry::EditUndo),
+        menuEntryToId(MenuEntry::EditRedo),
+        menuEntryToId(MenuEntry::EditCut),
+        menuEntryToId(MenuEntry::EditCopy),
+        menuEntryToId(MenuEntry::EditPaste),
+        menuEntryToId(MenuEntry::FormatBold),
+        menuEntryToId(MenuEntry::FormatItalic),
+        menuEntryToId(MenuEntry::FormatLeftAlign),
+        menuEntryToId(MenuEntry::FormatRightAlign),
+        menuEntryToId(MenuEntry::FormatJustify),
+        menuEntryToId(MenuEntry::FormatCenter)
+    };
     c.addArray(commands);
 }
 
@@ -174,6 +176,56 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
         result.setInfo (menuEntryToString(MenuEntry::FileExit), String::empty, "Menu", 0);
         result.addDefaultKeypress ('Q', ModifierKeys::ctrlModifier);
         break;
+    case MenuEntry::EditUndo:
+        result.setInfo (menuEntryToString(MenuEntry::EditUndo), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('Z', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::EditRedo:
+        result.setInfo (menuEntryToString(MenuEntry::EditRedo), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('Z', ModifierKeys::ctrlModifier | ModifierKeys::altModifier);
+        break;
+    case MenuEntry::EditCut:
+        result.setInfo (menuEntryToString(MenuEntry::EditCut), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('X', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::EditCopy:
+        result.setInfo (menuEntryToString(MenuEntry::EditCopy), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('C', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::EditPaste:
+        result.setInfo (menuEntryToString(MenuEntry::EditPaste), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('V', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FormatBold:
+        result.setInfo (menuEntryToString(MenuEntry::FormatBold), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
+        result.setTicked(false);
+        result.addDefaultKeypress ('B', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FormatItalic:
+        result.setInfo (menuEntryToString(MenuEntry::FormatItalic), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
+        result.setTicked(false);
+        result.addDefaultKeypress ('I', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FormatLeftAlign:
+        result.setInfo (menuEntryToString(MenuEntry::FormatLeftAlign), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
+        result.setTicked(false);
+        result.addDefaultKeypress ('L', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FormatRightAlign:
+        result.setInfo (menuEntryToString(MenuEntry::FormatRightAlign), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
+        result.setTicked(false);
+        result.addDefaultKeypress ('R', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FormatJustify:
+        result.setInfo (menuEntryToString(MenuEntry::FormatJustify), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
+        result.setTicked(false);
+        result.addDefaultKeypress ('J', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FormatCenter:
+        result.setInfo (menuEntryToString(MenuEntry::FormatCenter), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
+        result.setTicked(false);
+        result.addDefaultKeypress ('E', ModifierKeys::ctrlModifier);
+        break;
     }
 }
 
@@ -197,6 +249,39 @@ bool MainComponent::perform(const InvocationInfo& info)
         statusBarLabel.setText("File->Exit invoked", dontSendNotification);
         JUCEApplication::getInstance()->systemRequestedQuit();
         break;
+    case MenuEntry::EditUndo:
+        statusBarLabel.setText("Edit->Undo invoked", dontSendNotification);
+        break;
+    case MenuEntry::EditRedo:
+        statusBarLabel.setText("Edit->Redo invoked", dontSendNotification);
+        break;
+    case MenuEntry::EditCut:
+        statusBarLabel.setText("Edit->Cut invoked", dontSendNotification);
+        break;
+    case MenuEntry::EditCopy:
+        statusBarLabel.setText("Edit->Copy invoked", dontSendNotification);
+        break;
+    case MenuEntry::EditPaste:
+        statusBarLabel.setText("Edit->Pase invoked", dontSendNotification);
+        break;
+    case MenuEntry::FormatBold:
+        statusBarLabel.setText("Edit->Format->Bold invoked", dontSendNotification);
+        break;
+    case MenuEntry::FormatItalic:
+        statusBarLabel.setText("Edit->Format->Italic invoked", dontSendNotification);
+        break;
+    case MenuEntry::FormatLeftAlign:
+        statusBarLabel.setText("Edit->Format->LeftAlign invoked", dontSendNotification);
+        break;
+    case MenuEntry::FormatRightAlign:
+        statusBarLabel.setText("Edit->Format->RightAlign invoked", dontSendNotification);
+        break;
+    case MenuEntry::FormatJustify:
+        statusBarLabel.setText("Edit->Format->Justify invoked", dontSendNotification);
+        break;
+    case MenuEntry::FormatCenter:
+        statusBarLabel.setText("Edit->Format->Center invoked", dontSendNotification);
+        break;    
     default:
         Logger::getCurrentLogger()->writeToLog("Could not perform");
         return false;
