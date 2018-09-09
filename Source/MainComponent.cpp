@@ -1,10 +1,46 @@
 #include "MainComponent.h"
 #include "MenuIDs.h"
 
+namespace
+{
+
+MainComponent::Alignment menuEntryToAlignment(MenuEntry menuEntry)
+{
+    switch(menuEntry)
+    {
+    case MenuEntry::FormatLeftAlign:
+        return MainComponent::Alignment::LeftAlign;
+    case MenuEntry::FormatRightAlign:
+        return MainComponent::Alignment::RightAlign;
+    case MenuEntry::FormatJustify:
+        return MainComponent::Alignment::Justify;
+    case MenuEntry::FormatCenter:
+        return MainComponent::Alignment::Center;
+    }
+}
+    
+MenuEntry alignmentToMenuEntry(MainComponent::Alignment alignment)
+{
+    switch(alignment)
+    {
+    case MainComponent::Alignment::LeftAlign:
+        return MenuEntry::FormatLeftAlign; 
+    case MainComponent::Alignment::RightAlign:
+        return MenuEntry::FormatRightAlign; 
+    case MainComponent::Alignment::Justify:
+        return MenuEntry::FormatJustify;
+    case MainComponent::Alignment::Center:
+        return MenuEntry::FormatCenter;
+    }
+}
+    
+}
+
 MainComponent::MainComponent() : menuBar(this)
 {
     m_italicFormatFlag = false;
     m_boldFormatFlag = false;
+    m_alignment = Alignment::LeftAlign;
     addAndMakeVisible(&menuBar);
     addAndMakeVisible(&statusBarLabel);
     
@@ -191,22 +227,22 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
         break;
     case MenuEntry::FormatLeftAlign:
         result.setInfo (menuEntryToString(MenuEntry::FormatLeftAlign), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
-        result.setTicked(false);
+        result.setTicked(m_alignment == Alignment::LeftAlign);
         result.addDefaultKeypress ('L', ModifierKeys::ctrlModifier);
         break;
     case MenuEntry::FormatRightAlign:
         result.setInfo (menuEntryToString(MenuEntry::FormatRightAlign), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
-        result.setTicked(false);
+        result.setTicked(m_alignment == Alignment::RightAlign);
         result.addDefaultKeypress ('R', ModifierKeys::ctrlModifier);
         break;
     case MenuEntry::FormatJustify:
         result.setInfo (menuEntryToString(MenuEntry::FormatJustify), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
-        result.setTicked(false);
+        result.setTicked(m_alignment == Alignment::Justify);
         result.addDefaultKeypress ('J', ModifierKeys::ctrlModifier);
         break;
     case MenuEntry::FormatCenter:
         result.setInfo (menuEntryToString(MenuEntry::FormatCenter), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
-        result.setTicked(false);
+        result.setTicked(m_alignment == Alignment::Center);
         result.addDefaultKeypress ('E', ModifierKeys::ctrlModifier);
         break;
     }
@@ -248,21 +284,25 @@ bool MainComponent::perform(const InvocationInfo& info)
         statusBarLabel.setText("Edit->Pase invoked", dontSendNotification);
         break;
     case MenuEntry::FormatBold:
-        statusBarLabel.setText("Edit->Format->Bold invoked", dontSendNotification);
+        onFormatBold();
         break;
     case MenuEntry::FormatItalic:
-        statusBarLabel.setText("Edit->Format->Italic invoked", dontSendNotification);
+        onFormatItalic();
         break;
     case MenuEntry::FormatLeftAlign:
+        onAlignmentChanged(info.commandID);
         statusBarLabel.setText("Edit->Format->LeftAlign invoked", dontSendNotification);
         break;
     case MenuEntry::FormatRightAlign:
+        onAlignmentChanged(info.commandID);
         statusBarLabel.setText("Edit->Format->RightAlign invoked", dontSendNotification);
         break;
     case MenuEntry::FormatJustify:
+        onAlignmentChanged(info.commandID);
         statusBarLabel.setText("Edit->Format->Justify invoked", dontSendNotification);
         break;
     case MenuEntry::FormatCenter:
+        onAlignmentChanged(info.commandID);
         statusBarLabel.setText("Edit->Format->Center invoked", dontSendNotification);
         break;    
     default:
@@ -273,11 +313,50 @@ bool MainComponent::perform(const InvocationInfo& info)
     return true;
 }
 
+void MainComponent::onFormatBold()
+{
+    statusBarLabel.setText("Edit->Format->Bold invoked", dontSendNotification);
+    ApplicationCommandInfo result(menuEntryToId(MenuEntry::FormatBold));
+    getCommandInfo(menuEntryToId(MenuEntry::FormatBold), result);
+    m_boldFormatFlag = !m_boldFormatFlag;
+    result.setTicked(m_boldFormatFlag);
+}
+
+void MainComponent::onFormatItalic()
+{
+    statusBarLabel.setText("Edit->Format->Italic invoked", dontSendNotification);
+    ApplicationCommandInfo result(menuEntryToId(MenuEntry::FormatItalic));
+    getCommandInfo(menuEntryToId(MenuEntry::FormatItalic), result);
+    m_italicFormatFlag = !m_italicFormatFlag;
+    result.setTicked(m_italicFormatFlag);
+}
+
+void MainComponent::onAlignmentChanged(CommandID commandID)
+{
+    Alignment desiredAlignment = menuEntryToAlignment(static_cast<MenuEntry>(commandID));
+    MenuEntry currMenuEntry = alignmentToMenuEntry(m_alignment);
+    
+    if (m_alignment != desiredAlignment)
+    {
+        // check the desired alignment
+        Logger::outputDebugString ("Checking Desired Menu Entry: " + menuEntryToString(static_cast<MenuEntry>(commandID)));
+        ApplicationCommandInfo desiredResult(commandID);
+        getCommandInfo(commandID, desiredResult);
+        desiredResult.setTicked(true);
+        
+        // uncheck the previous alignment
+        Logger::outputDebugString ("Unchecking Previous Menu Entry: " + menuEntryToString(currMenuEntry));
+        ApplicationCommandInfo previousResult(menuEntryToId(currMenuEntry));
+        getCommandInfo(menuEntryToId(currMenuEntry), previousResult);
+        previousResult.setTicked(false);
+        
+        m_alignment = desiredAlignment;
+    }
+    
+}
 
 void MainComponent::mouseDown(const MouseEvent & e)
 {
-    Logger::getCurrentLogger()->writeToLog("mouseDown STARTED");
-
     if (e.mods.isPopupMenu())
     {
         PopupMenu menu;
@@ -287,14 +366,10 @@ void MainComponent::mouseDown(const MouseEvent & e)
 
         menu.showMenuAsync(PopupMenu::Options(),   ModalCallbackFunction::forComponent (menuCallback, this));
     }
-   
-    Logger::getCurrentLogger()->writeToLog("mouseDown ENDED");
 }
 
 void MainComponent::menuCallback (int result, MainComponent* thisComponent)
 {
-    Logger::getCurrentLogger()->writeToLog("menuCallback STARTED");
-    
     if (thisComponent != nullptr)
     {
         if (result == menuEntryToId(MenuEntry::EditCut))
@@ -310,6 +385,4 @@ void MainComponent::menuCallback (int result, MainComponent* thisComponent)
             thisComponent->statusBarLabel.setText("Context Menu -> Paste invoked", dontSendNotification);
         }
     }
-    
-    Logger::getCurrentLogger()->writeToLog("menuCallback ENDED");
 }

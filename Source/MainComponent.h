@@ -24,6 +24,18 @@ public:
     
     void mouseDown(const MouseEvent & e);
     static void menuCallback (int result, MainComponent* thisComponent);
+    
+    void onFormatBold();
+    void onFormatItalic();
+    void onAlignmentChanged(CommandID commandID);
+    
+    enum class Alignment
+    {
+        LeftAlign,
+        RightAlign,
+        Justify,
+        Center
+    };
 
 private:
     ApplicationCommandManager m_commandManager;
@@ -33,14 +45,6 @@ private:
 
     bool m_italicFormatFlag;
     bool m_boldFormatFlag;
-    
-    enum class Alignment
-    {
-        LeftAlign,
-        RightAlign,
-        Justify,
-        Center
-    };
     Alignment m_alignment;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
