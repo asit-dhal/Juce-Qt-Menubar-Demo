@@ -3,6 +3,8 @@
 
 MainComponent::MainComponent() : menuBar(this)
 {
+    m_italicFormatFlag = false;
+    m_boldFormatFlag = false;
     addAndMakeVisible(&menuBar);
     addAndMakeVisible(&statusBarLabel);
     
@@ -179,12 +181,12 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
         break;
     case MenuEntry::FormatBold:
         result.setInfo (menuEntryToString(MenuEntry::FormatBold), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
-        result.setTicked(false);
+        result.setTicked(m_boldFormatFlag);
         result.addDefaultKeypress ('B', ModifierKeys::ctrlModifier);
         break;
     case MenuEntry::FormatItalic:
         result.setInfo (menuEntryToString(MenuEntry::FormatItalic), String::empty, "Menu", ApplicationCommandInfo::CommandFlags::isTicked);
-        result.setTicked(false);
+        result.setTicked(m_italicFormatFlag);
         result.addDefaultKeypress ('I', ModifierKeys::ctrlModifier);
         break;
     case MenuEntry::FormatLeftAlign:
@@ -267,7 +269,7 @@ bool MainComponent::perform(const InvocationInfo& info)
         Logger::getCurrentLogger()->writeToLog("Could not perform");
         return false;
     }
-
+    menuItemsChanged();
     return true;
 }
 

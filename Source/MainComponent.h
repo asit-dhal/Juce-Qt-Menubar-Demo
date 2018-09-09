@@ -31,5 +31,17 @@ private:
     MenuBarComponent menuBar;
     ApplicationProperties appProperties;
 
+    bool m_italicFormatFlag;
+    bool m_boldFormatFlag;
+    
+    enum class Alignment
+    {
+        LeftAlign,
+        RightAlign,
+        Justify,
+        Center
+    };
+    Alignment m_alignment;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
