@@ -3,25 +3,11 @@
 
 MainComponent::MainComponent() : menuBar(this)
 {
-    label.setEditable(true);
     addAndMakeVisible(&menuBar);
-    addAndMakeVisible(&label);
-    addAndMakeVisible(&slider);
     addAndMakeVisible(&statusBarLabel);
     
     setSize (600, 400);
-    
-    PropertiesFile::Options options;
-    options.applicationName     = ProjectInfo::projectName;
-    options.folderName          = ProjectInfo::projectName;
-    options.filenameSuffix      = "settings";
-    options.osxLibrarySubFolder = "Application Support";
-    appProperties.setStorageParameters (options);
-    
-    PropertiesFile* props = appProperties.getUserSettings();
-    label.setText (props->getValue ("label", "<empty>"), dontSendNotification);
-    slider.setValue (props->getDoubleValue ("slider", 0.0));
-    
+        
     setApplicationCommandManagerToWatch(&m_commandManager);
     m_commandManager.registerAllCommandsForTarget(this);
     addKeyListener(m_commandManager.getKeyMappings());
@@ -29,9 +15,7 @@ MainComponent::MainComponent() : menuBar(this)
 
 MainComponent::~MainComponent()
 {
-    PropertiesFile* props = appProperties.getUserSettings();
-    props->setValue ("label", label.getText());
-    props->setValue ("slider", slider.getValue());
+    
 }
 
 void MainComponent::paint (Graphics& g)
@@ -40,14 +24,11 @@ void MainComponent::paint (Graphics& g)
 
     g.setFont (Font (16.0f));
     g.setColour (Colours::white);
-    g.drawText ("Hello World!", getLocalBounds(), Justification::centred, true);
 }
 
 void MainComponent::resized()
 {
     menuBar.setBounds(0, 0, getWidth(), 25);
-    label.setBounds(10, 30, getWidth()-20, 20);
-    slider.setBounds(10, 60, getWidth()-20, 20);
     statusBarLabel.setBounds(0, getHeight()-20, getWidth(), 20);
 }
 
@@ -304,11 +285,7 @@ void MainComponent::mouseDown(const MouseEvent & e)
 
         menu.showMenuAsync(PopupMenu::Options(),   ModalCallbackFunction::forComponent (menuCallback, this));
     }
-    else
-    {
-        mouseDown(e);
-    }
-    
+   
     Logger::getCurrentLogger()->writeToLog("mouseDown ENDED");
 }
 

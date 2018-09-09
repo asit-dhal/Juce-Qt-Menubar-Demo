@@ -27,8 +27,6 @@ public:
 
 private:
     ApplicationCommandManager m_commandManager;
-    Label label;
-    Slider slider;
     Label statusBarLabel;
     MenuBarComponent menuBar;
     ApplicationProperties appProperties;
