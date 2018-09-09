@@ -289,3 +289,48 @@ bool MainComponent::perform(const InvocationInfo& info)
 
     return true;
 }
+
+
+void MainComponent::mouseDown(const MouseEvent & e)
+{
+    Logger::getCurrentLogger()->writeToLog("mouseDown STARTED");
+
+    if (e.mods.isPopupMenu())
+    {
+        PopupMenu menu;
+        menu.addItem (menuEntryToId(MenuEntry::EditCut), menuEntryToString(MenuEntry::EditCut));
+        menu.addItem (menuEntryToId(MenuEntry::EditCopy), menuEntryToString(MenuEntry::EditCopy));
+        menu.addItem (menuEntryToId(MenuEntry::EditPaste), menuEntryToString(MenuEntry::EditPaste));
+
+        menu.showMenuAsync(PopupMenu::Options(),   ModalCallbackFunction::forComponent (menuCallback, this));
+    }
+    else
+    {
+        mouseDown(e);
+    }
+    
+    Logger::getCurrentLogger()->writeToLog("mouseDown ENDED");
+}
+
+void MainComponent::menuCallback (int result, MainComponent* thisComponent)
+{
+    Logger::getCurrentLogger()->writeToLog("menuCallback STARTED");
+    
+    if (thisComponent != nullptr)
+    {
+        if (result == menuEntryToId(MenuEntry::EditCut))
+        {
+            thisComponent->statusBarLabel.setText("Context Menu -> Cut invoked", dontSendNotification);
+        }
+        else if (result == menuEntryToId(MenuEntry::EditCopy))
+        {
+            thisComponent->statusBarLabel.setText("Context Menu -> Copy invoked", dontSendNotification);
+        }
+        else if (result == menuEntryToId(MenuEntry::EditPaste))
+        {
+            thisComponent->statusBarLabel.setText("Context Menu -> Paste invoked", dontSendNotification);
+        }
+    }
+    
+    Logger::getCurrentLogger()->writeToLog("menuCallback ENDED");
+}

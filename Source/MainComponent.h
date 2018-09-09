@@ -21,6 +21,9 @@ public:
     void getAllCommands(Array<CommandID>& c) override;
     void getCommandInfo(CommandID commandID, ApplicationCommandInfo& result) override;
     bool perform(const InvocationInfo& info) override;
+    
+    void mouseDown(const MouseEvent & e);
+    static void menuCallback (int result, MainComponent* thisComponent);
 
 private:
     ApplicationCommandManager m_commandManager;
