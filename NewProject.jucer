@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="w57T9E" name="NewProject" projectType="guiapp" jucerVersion="5.3.2">
-  <MAINGROUP id="FQnd6J" name="NewProject">
+<JUCERPROJECT id="w57T9E" name="MenuBar" projectType="guiapp" jucerVersion="5.3.2">
+  <MAINGROUP id="FQnd6J" name="MenuBar">
     <GROUP id="{A5AB7D7B-3417-B9C4-F3A1-4E4866E95892}" name="Source">
       <FILE id="MInLNc" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="KdrrDE" name="MainComponent.cpp" compile="1" resource="0"

@@ -36,6 +36,8 @@ std::string menuEntryToString(MenuEntry entry)
     case MenuEntry::FormatRightAlign: return "Right Align";
     case MenuEntry::FormatJustify:    return "Justify";
     case MenuEntry::FormatCenter:     return "Center";
+    case MenuEntry::FormatSetLineSpacing: return "Set Line Spacing...";
+    case MenuEntry::FormatSetParagraphSpacing: return "Set Paragraph Spacing...";
     }
 }
 

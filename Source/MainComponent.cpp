@@ -7,6 +7,7 @@ MainComponent::MainComponent() : menuBar(this)
     addAndMakeVisible(&menuBar);
     addAndMakeVisible(&label);
     addAndMakeVisible(&slider);
+    addAndMakeVisible(&statusBarLabel);
     
     setSize (600, 400);
     
@@ -20,6 +21,10 @@ MainComponent::MainComponent() : menuBar(this)
     PropertiesFile* props = appProperties.getUserSettings();
     label.setText (props->getValue ("label", "<empty>"), dontSendNotification);
     slider.setValue (props->getDoubleValue ("slider", 0.0));
+    
+    setApplicationCommandManagerToWatch(&m_commandManager);
+    m_commandManager.registerAllCommandsForTarget(this);
+    addKeyListener(m_commandManager.getKeyMappings());
 }
 
 MainComponent::~MainComponent()
@@ -43,6 +48,7 @@ void MainComponent::resized()
     menuBar.setBounds(0, 0, getWidth(), 25);
     label.setBounds(10, 30, getWidth()-20, 20);
     slider.setBounds(10, 60, getWidth()-20, 20);
+    statusBarLabel.setBounds(0, getHeight()-20, getWidth(), 20);
 }
 
 StringArray MainComponent::getMenuBarNames()
@@ -57,12 +63,12 @@ PopupMenu MainComponent::getMenuForIndex(int index, const String& name)
     
     if (name == "File")
     {
-        menu.addItem(menuEntryToId(MenuEntry::FileNew), menuEntryToString(MenuEntry::FileNew));
-        menu.addItem(menuEntryToId(MenuEntry::FileOpen), menuEntryToString(MenuEntry::FileOpen));
-        menu.addItem(menuEntryToId(MenuEntry::FileSave), menuEntryToString(MenuEntry::FileSave));
-        menu.addItem(menuEntryToId(MenuEntry::FilePrint), menuEntryToString(MenuEntry::FilePrint));
+        menu.addCommandItem (&m_commandManager, menuEntryToId(MenuEntry::FileNew));
+        menu.addCommandItem (&m_commandManager, menuEntryToId(MenuEntry::FileOpen));
+        menu.addCommandItem (&m_commandManager, menuEntryToId(MenuEntry::FileSave));
+        menu.addCommandItem (&m_commandManager, menuEntryToId(MenuEntry::FilePrint));
         menu.addSeparator();
-        menu.addItem(menuEntryToId(MenuEntry::FileExit), menuEntryToString(MenuEntry::FileExit));
+        menu.addCommandItem (&m_commandManager, menuEntryToId(MenuEntry::FileExit));
     }
     else if (name == "Edit")
     {
@@ -102,44 +108,99 @@ void MainComponent::menuItemSelected(int menuID, int index)
 {
     switch(static_cast<MenuEntry>(menuID))
     {
-    case MenuEntry::FileNew:
-        label.setText("FileNew", dontSendNotification);
-        break;
-    case MenuEntry::FileOpen:
-        label.setText("FileOpen", dontSendNotification);
-        break;
-    case MenuEntry::FileSave:
-        label.setText("FileSave", dontSendNotification);
-        break;
-    case MenuEntry::FilePrint:
-        label.setText("FilePrint", dontSendNotification);
-        break;
-    case MenuEntry::FileExit:
-        label.setText("FileExit", dontSendNotification);
-        break;
     case MenuEntry::EditUndo:
-        label.setText("EditUndo", dontSendNotification);
+        statusBarLabel.setText("Edit->Undo invoked", dontSendNotification);
         break;
     case MenuEntry::EditRedo:
-        label.setText("EditRedo", dontSendNotification);
+        statusBarLabel.setText("Edit->Redo invoked", dontSendNotification);
         break;
     case MenuEntry::EditCut:
-        label.setText("EditCut", dontSendNotification);
+        statusBarLabel.setText("Edit->Cut invoked", dontSendNotification);
         break;
     case MenuEntry::EditCopy:
-        label.setText("EditCopy", dontSendNotification);
+        statusBarLabel.setText("Edit->Copy invoked", dontSendNotification);
         break;
     case MenuEntry::EditPaste:
-        label.setText("EditPaste", dontSendNotification);
+        statusBarLabel.setText("Edit->Paste invoked", dontSendNotification);
         break;
     case MenuEntry::EditFormat:
-        label.setText("EditFormat", dontSendNotification);
+        statusBarLabel.setText("Edit->Format invoked", dontSendNotification);
         break;
    case MenuEntry::HelpAbout:
-        label.setText("HelpAbout", dontSendNotification);
+        statusBarLabel.setText("Help->About invoked", dontSendNotification);
         break;
    case MenuEntry::HelpAboutQt:
-        label.setText("HelpAboutQt", dontSendNotification);
+        statusBarLabel.setText("Help->AboutQt invoked", dontSendNotification);
         break;
     }
+}
+
+ApplicationCommandTarget* MainComponent::getNextCommandTarget()
+{
+    return nullptr;
+}
+
+void MainComponent::getAllCommands(Array<CommandID>& c)
+{
+    Array<CommandID> commands { menuEntryToId(MenuEntry::FileNew),
+                                menuEntryToId(MenuEntry::FileOpen),
+                                menuEntryToId(MenuEntry::FileSave),
+                                menuEntryToId(MenuEntry::FilePrint),
+                                menuEntryToId(MenuEntry::FileExit) };
+    c.addArray(commands);
+}
+
+void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& result)
+{
+    switch(static_cast<MenuEntry>(commandID))
+    {
+    case MenuEntry::FileNew:
+        result.setInfo (menuEntryToString(MenuEntry::FileNew), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('N', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FileOpen:
+        result.setInfo (menuEntryToString(MenuEntry::FileOpen), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('O', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FileSave:
+        result.setInfo (menuEntryToString(MenuEntry::FileSave), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('S', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FilePrint:
+        result.setInfo (menuEntryToString(MenuEntry::FilePrint), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('P', ModifierKeys::ctrlModifier);
+        break;
+    case MenuEntry::FileExit:
+        result.setInfo (menuEntryToString(MenuEntry::FileExit), String::empty, "Menu", 0);
+        result.addDefaultKeypress ('Q', ModifierKeys::ctrlModifier);
+        break;
+    }
+}
+
+bool MainComponent::perform(const InvocationInfo& info)
+{
+    switch (static_cast<MenuEntry>(info.commandID))
+    {
+    case MenuEntry::FileNew:
+        statusBarLabel.setText("File->New invoked", dontSendNotification);
+        break;
+    case MenuEntry::FileOpen:
+        statusBarLabel.setText("File->Open invoked", dontSendNotification);
+        break;
+    case MenuEntry::FileSave:
+        statusBarLabel.setText("File->Save invoked", dontSendNotification);
+        break;
+    case MenuEntry::FilePrint:
+        statusBarLabel.setText("File->Print invoked", dontSendNotification);
+        break;
+    case MenuEntry::FileExit:
+        statusBarLabel.setText("File->Exit invoked", dontSendNotification);
+        JUCEApplication::getInstance()->systemRequestedQuit();
+        break;
+    default:
+        Logger::getCurrentLogger()->writeToLog("Could not perform");
+        return false;
+    }
+
+    return true;
 }
