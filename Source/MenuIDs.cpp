@@ -50,6 +50,18 @@ std::string menuEntryToIconName(MenuEntry entry)
     case MenuEntry::FileSave:  return "file-save.svg";
     case MenuEntry::FilePrint: return "file-print.svg";
     case MenuEntry::FileExit:  return "file-exit.svg";
+    
+    case MenuEntry::EditUndo:  return "edit-undo.svg";
+    case MenuEntry::EditRedo:  return "edit-redo.svg";
+    case MenuEntry::EditCut:   return "edit-cut.svg";
+    case MenuEntry::EditCopy:  return "edit-copy.svg";
+    case MenuEntry::EditPaste: return "edit-paste.svg";
+    
+    case MenuEntry::FormatBold:       return "format-bold.svg";
+    case MenuEntry::FormatItalic:     return "format-italic.svg";
+    case MenuEntry::FormatLeftAlign:  return "format-left-align.svg";
+    case MenuEntry::FormatRightAlign: return "format-right-align.svg";
+    case MenuEntry::FormatJustify:    return "format-justify.svg";
     }
 }
 

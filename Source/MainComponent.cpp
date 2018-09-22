@@ -1,5 +1,4 @@
 #include "MainComponent.h"
-#include "MenuIDs.h"
 
 namespace
 {
@@ -81,8 +80,12 @@ void MainComponent::paint (Graphics& g)
 
 void MainComponent::resized()
 {
-    menuBar.setBounds(0, 0, getWidth(), 25);
-    m_toolbar.setBounds(getLocalBounds().removeFromTop(50));
+    auto const menubarHeight = 25;
+    auto const toolbarHeight = 40;
+    
+    auto area = getLocalBounds();
+    menuBar.setBounds(area.removeFromTop(menubarHeight));
+    m_toolbar.setBounds(area.removeFromTop(toolbarHeight));
     statusBarLabel.setBounds(0, getHeight()-20, getWidth(), 20);
 }
 
@@ -401,4 +404,127 @@ void MainComponent::menuCallback (int result, MainComponent* thisComponent)
             thisComponent->statusBarLabel.setText("Context Menu -> Paste invoked", dontSendNotification);
         }
     }
+}
+
+
+void MainComponent::AppToolbarItemFactory::getAllToolbarItemIds(Array<int>& ids)
+{
+    ids.add(menuEntryToId(MenuEntry::FileNew));
+    ids.add(menuEntryToId(MenuEntry::FileOpen));
+    ids.add(menuEntryToId(MenuEntry::FileSave));
+    ids.add(menuEntryToId(MenuEntry::FilePrint));
+    
+    ids.add(menuEntryToId(MenuEntry::EditUndo));
+    ids.add(menuEntryToId(MenuEntry::EditRedo));
+    ids.add(menuEntryToId(MenuEntry::EditCut));
+    ids.add(menuEntryToId(MenuEntry::EditCopy));
+    ids.add(menuEntryToId(MenuEntry::EditPaste));
+        
+    ids.add(menuEntryToId(MenuEntry::FormatBold));
+    ids.add(menuEntryToId(MenuEntry::FormatItalic));
+
+    ids.add(menuEntryToId(MenuEntry::FormatLeftAlign));
+    ids.add(menuEntryToId(MenuEntry::FormatRightAlign));
+    ids.add(menuEntryToId(MenuEntry::FormatJustify));
+    //ids.add(menuEntryToId(MenuEntry::FormatCenter));
+    //ids.add(menuEntryToId(MenuEntry::FormatSetLineSpacing));
+    //ids.add(menuEntryToId(MenuEntry::FormatSetParagraphSpacing));
+    
+    ids.add (separatorBarId);
+    ids.add (spacerId);
+    ids.add (flexibleSpacerId);
+}
+
+void MainComponent::AppToolbarItemFactory::getDefaultItemSet(Array<int>& ids)
+{
+    ids.add(menuEntryToId(MenuEntry::FileNew));
+    ids.add(menuEntryToId(MenuEntry::FileOpen));
+    ids.add(menuEntryToId(MenuEntry::FileSave));
+    ids.add(menuEntryToId(MenuEntry::FilePrint));
+    ids.add (separatorBarId);
+    
+    ids.add(menuEntryToId(MenuEntry::EditUndo));
+    ids.add(menuEntryToId(MenuEntry::EditRedo));
+    ids.add(menuEntryToId(MenuEntry::EditCut));
+    ids.add(menuEntryToId(MenuEntry::EditCopy));
+    ids.add(menuEntryToId(MenuEntry::EditPaste));
+    ids.add (separatorBarId);
+    
+    ids.add(menuEntryToId(MenuEntry::FormatBold));
+    ids.add(menuEntryToId(MenuEntry::FormatItalic));
+
+    ids.add(menuEntryToId(MenuEntry::FormatLeftAlign));
+    ids.add(menuEntryToId(MenuEntry::FormatRightAlign));
+    ids.add(menuEntryToId(MenuEntry::FormatJustify));
+    //ids.add(menuEntryToId(MenuEntry::FormatCenter));
+    //ids.add(menuEntryToId(MenuEntry::FormatSetLineSpacing));
+    //ids.add(menuEntryToId(MenuEntry::FormatSetParagraphSpacing));
+}
+
+ToolbarItemComponent* MainComponent::AppToolbarItemFactory::createItem(int itemId)
+{
+    switch(static_cast<MenuEntry>(itemId))
+    {
+    case MenuEntry::FileNew:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FileNew), menuEntryToIconName(MenuEntry::FileNew));
+    case MenuEntry::FileOpen:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FileOpen), menuEntryToIconName(MenuEntry::FileOpen));
+    case MenuEntry::FileSave:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FileSave), menuEntryToIconName(MenuEntry::FileSave));
+    case MenuEntry::FilePrint:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FilePrint), menuEntryToIconName(MenuEntry::FilePrint));
+        
+    case MenuEntry::EditUndo:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditUndo), menuEntryToIconName(MenuEntry::EditUndo));
+    case MenuEntry::EditRedo:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditRedo), menuEntryToIconName(MenuEntry::EditRedo));
+    case MenuEntry::EditCut:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditCut), menuEntryToIconName(MenuEntry::EditCut));
+    case MenuEntry::EditCopy:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditCopy), menuEntryToIconName(MenuEntry::EditCopy));
+    case MenuEntry::EditPaste:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditPaste), menuEntryToIconName(MenuEntry::EditPaste));
+    
+    case MenuEntry::FormatBold:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatBold), menuEntryToIconName(MenuEntry::FormatBold));
+    case MenuEntry::FormatItalic:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatItalic), menuEntryToIconName(MenuEntry::FormatItalic));
+    
+    case MenuEntry::FormatLeftAlign:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatLeftAlign), menuEntryToIconName(MenuEntry::FormatLeftAlign));
+    case MenuEntry::FormatRightAlign:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatRightAlign), menuEntryToIconName(MenuEntry::FormatRightAlign));
+    case MenuEntry::FormatJustify:
+        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatJustify), menuEntryToIconName(MenuEntry::FormatJustify));
+    }
+    
+    return nullptr; 
+}
+
+
+ToolbarButton* MainComponent::AppToolbarItemFactory::createButtonFromZipFileSVG(const int itemId, const String& text, const String& filename)
+{
+    if (m_iconsFromZipFile.size() == 0)
+    {
+        auto assetsDir = File::getSpecialLocation(File::currentExecutableFile);
+        auto resourceFile = assetsDir.getParentDirectory().getChildFile("icons.zip");
+        jassert(resourceFile.existsAsFile());
+        ZipFile icons (resourceFile);
+        for(auto i = 0; i < icons.getNumEntries(); ++i)
+        {
+            std::unique_ptr<InputStream> svgFileStream(icons.createStreamForEntry(i));
+            if (svgFileStream.get() != nullptr)
+            {
+                Logger::getCurrentLogger()->writeToLog("icon filename: " + icons.getEntry(i)->filename);
+                m_iconNames.add(icons.getEntry(i)->filename);
+                m_iconsFromZipFile.add(Drawable::createFromImageDataStream(*svgFileStream));
+            }
+        }
+    }
+    
+    Logger::getCurrentLogger()->writeToLog("Creating button for: " + filename);
+    auto indexOfItem = m_iconNames.indexOf(filename);
+    jassert(indexOfItem != -1);
+    auto* image = m_iconsFromZipFile[indexOfItem]->createCopy();
+    return new ToolbarButton(itemId, text, image, 0);
 }

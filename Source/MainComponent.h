@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "AppToolbarItemFactory.h"
+#include "MenuIDs.h"
 
 class MainComponent   : public Component
                       , public MenuBarModel
@@ -39,6 +39,20 @@ public:
     };
 
 private:
+    class AppToolbarItemFactory : public ToolbarItemFactory
+    {
+    public:
+        AppToolbarItemFactory() = default;
+        void getAllToolbarItemIds(Array<int>& ids) override;
+        void getDefaultItemSet(Array<int>& ids) override;
+        ToolbarItemComponent* createItem(int itemId) override;
+    
+    private:
+        StringArray m_iconNames;
+        OwnedArray<Drawable> m_iconsFromZipFile;
+        ToolbarButton* createButtonFromZipFileSVG(const int itemId, const String& text, const String& filename);
+    };
+
     ApplicationCommandManager m_commandManager;
     Label statusBarLabel;
     MenuBarComponent menuBar;
