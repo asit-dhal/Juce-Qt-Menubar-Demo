@@ -35,7 +35,7 @@ MenuEntry alignmentToMenuEntry(MainComponent::Alignment alignment)
     
 }
 
-MainComponent::MainComponent() : menuBar(this)
+MainComponent::MainComponent() : menuBar(this), m_factory(this)
 {
     addAndMakeVisible(&menuBar);
     addAndMakeVisible(&m_toolbar);
@@ -406,6 +406,12 @@ void MainComponent::menuCallback (int result, MainComponent* thisComponent)
     }
 }
 
+void MainComponent::onToolbarButtonClick(int itemId)
+{
+    ApplicationCommandTarget::InvocationInfo invocationInfo(itemId);
+    invocationInfo.invocationMethod = ApplicationCommandTarget::InvocationInfo::direct;
+    invoke(invocationInfo, true);
+}
 
 void MainComponent::AppToolbarItemFactory::getAllToolbarItemIds(Array<int>& ids)
 {
@@ -526,5 +532,7 @@ ToolbarButton* MainComponent::AppToolbarItemFactory::createButtonFromZipFileSVG(
     auto indexOfItem = m_iconNames.indexOf(filename);
     jassert(indexOfItem != -1);
     auto* image = m_iconsFromZipFile[indexOfItem]->createCopy();
-    return new ToolbarButton(itemId, text, image, 0);
+    auto* button = new ToolbarButton(itemId, text, image, 0);
+    button->onClick = [this, itemId=itemId](){ m_mainComponent->onToolbarButtonClick(itemId); };
+    return button;
 }

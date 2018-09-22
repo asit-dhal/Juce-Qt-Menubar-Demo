@@ -29,6 +29,7 @@ public:
     void onFormatBold();
     void onFormatItalic();
     void onAlignmentChanged(CommandID commandID);
+    void onToolbarButtonClick(int itemId);
     
     enum class Alignment
     {
@@ -37,12 +38,14 @@ public:
         Justify,
         Center
     };
+    
+    
 
 private:
     class AppToolbarItemFactory : public ToolbarItemFactory
     {
     public:
-        AppToolbarItemFactory() = default;
+        AppToolbarItemFactory(MainComponent *mainComponent) : m_mainComponent(mainComponent){}
         void getAllToolbarItemIds(Array<int>& ids) override;
         void getDefaultItemSet(Array<int>& ids) override;
         ToolbarItemComponent* createItem(int itemId) override;
@@ -51,6 +54,7 @@ private:
         StringArray m_iconNames;
         OwnedArray<Drawable> m_iconsFromZipFile;
         ToolbarButton* createButtonFromZipFileSVG(const int itemId, const String& text, const String& filename);
+        MainComponent *m_mainComponent;
     };
 
     ApplicationCommandManager m_commandManager;
