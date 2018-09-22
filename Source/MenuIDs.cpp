@@ -41,6 +41,18 @@ std::string menuEntryToString(MenuEntry entry)
     }
 }
 
+std::string menuEntryToIconName(MenuEntry entry)
+{
+    switch(entry)
+    {
+    case MenuEntry::FileNew:   return "file-new.svg";
+    case MenuEntry::FileOpen:  return "file-open.svg";
+    case MenuEntry::FileSave:  return "file-save.svg";
+    case MenuEntry::FilePrint: return "file-print.svg";
+    case MenuEntry::FileExit:  return "file-exit.svg";
+    }
+}
+
 int menuEntryToId(MenuEntry entry)
 {
     return static_cast<int>(entry);

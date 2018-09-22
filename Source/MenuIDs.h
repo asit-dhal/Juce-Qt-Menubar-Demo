@@ -40,4 +40,5 @@ enum class MenuEntry {
 };
 
 std::string menuEntryToString(MenuEntry entry);
+std::string menuEntryToIconName(MenuEntry entry);
 int menuEntryToId(MenuEntry entry);

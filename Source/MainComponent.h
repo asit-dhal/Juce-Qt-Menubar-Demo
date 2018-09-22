@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "AppToolbarItemFactory.h"
 
 class MainComponent   : public Component
                       , public MenuBarModel
@@ -42,6 +43,8 @@ private:
     Label statusBarLabel;
     MenuBarComponent menuBar;
     ApplicationProperties m_appProperties;
+    Toolbar m_toolbar;
+    AppToolbarItemFactory m_factory;
 
     bool m_italicFormatFlag;
     bool m_boldFormatFlag;

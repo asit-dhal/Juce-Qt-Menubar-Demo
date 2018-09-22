@@ -39,6 +39,7 @@ MenuEntry alignmentToMenuEntry(MainComponent::Alignment alignment)
 MainComponent::MainComponent() : menuBar(this)
 {
     addAndMakeVisible(&menuBar);
+    addAndMakeVisible(&m_toolbar);
     addAndMakeVisible(&statusBarLabel);
     
     setSize (600, 400);
@@ -58,6 +59,8 @@ MainComponent::MainComponent() : menuBar(this)
     setApplicationCommandManagerToWatch(&m_commandManager);
     m_commandManager.registerAllCommandsForTarget(this);
     addKeyListener(m_commandManager.getKeyMappings());
+    
+    m_toolbar.addDefaultItems(m_factory);
 }
 
 MainComponent::~MainComponent()
@@ -79,6 +82,7 @@ void MainComponent::paint (Graphics& g)
 void MainComponent::resized()
 {
     menuBar.setBounds(0, 0, getWidth(), 25);
+    m_toolbar.setBounds(getLocalBounds().removeFromTop(50));
     statusBarLabel.setBounds(0, getHeight()-20, getWidth(), 20);
 }
 
