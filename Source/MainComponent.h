@@ -41,7 +41,7 @@ private:
     ApplicationCommandManager m_commandManager;
     Label statusBarLabel;
     MenuBarComponent menuBar;
-    ApplicationProperties appProperties;
+    ApplicationProperties m_appProperties;
 
     bool m_italicFormatFlag;
     bool m_boldFormatFlag;

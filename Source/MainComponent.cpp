@@ -38,13 +38,22 @@ MenuEntry alignmentToMenuEntry(MainComponent::Alignment alignment)
 
 MainComponent::MainComponent() : menuBar(this)
 {
-    m_italicFormatFlag = false;
-    m_boldFormatFlag = false;
-    m_alignment = Alignment::LeftAlign;
     addAndMakeVisible(&menuBar);
     addAndMakeVisible(&statusBarLabel);
     
     setSize (600, 400);
+
+    PropertiesFile::Options options;
+    options.applicationName = ProjectInfo::projectName;
+    options.folderName = ProjectInfo::projectName;
+    options.filenameSuffix = "settings";
+    options.osxLibrarySubFolder = "Application Support";
+    m_appProperties.setStorageParameters(options);
+
+    PropertiesFile* props = m_appProperties.getUserSettings();
+    m_italicFormatFlag = props->getBoolValue("italic-format", false);
+    m_boldFormatFlag = props->getBoolValue("bold-format", false);
+    m_alignment = static_cast<Alignment>(props->getIntValue("alignment", 0));
         
     setApplicationCommandManagerToWatch(&m_commandManager);
     m_commandManager.registerAllCommandsForTarget(this);
@@ -53,7 +62,10 @@ MainComponent::MainComponent() : menuBar(this)
 
 MainComponent::~MainComponent()
 {
-    
+    PropertiesFile* props = m_appProperties.getUserSettings();
+    props->setValue("italic-format", m_italicFormatFlag);
+    props->setValue("bold-format", m_boldFormatFlag);
+    props->setValue("alignment", static_cast<int>(m_alignment));
 }
 
 void MainComponent::paint (Graphics& g)
