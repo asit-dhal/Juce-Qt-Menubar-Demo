@@ -1,5 +1,20 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>icons/edit-cut.svg</file>
+        <file>icons/edit-paste.svg</file>
+        <file>icons/edit-redo.svg</file>
+        <file>icons/edit-undo.svg</file>
+        <file>icons/file-exit.svg</file>
+        <file>icons/file-new.svg</file>
+        <file>icons/file-open.svg</file>
+        <file>icons/file-print.svg</file>
+        <file>icons/file-save.svg</file>
+        <file>icons/format-bold.svg</file>
+        <file>icons/format-italic.svg</file>
+        <file>icons/format-justify.svg</file>
+        <file>icons/format-left-align.svg</file>
+        <file>icons/format-right-align.svg</file>
+        <file>icons/edit-copy.svg</file>
     </qresource>
 </RCC>
