@@ -2,6 +2,7 @@ import QtQuick 2.11
 import QtQuick.Window 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
+import io.asitdhal.menubar 1.0
 
 ApplicationWindow {
     visible: true
@@ -207,5 +208,65 @@ ApplicationWindow {
             MenuItem { action: helpAboutMe }
             MenuItem { action: helpAboutQt }
         }
+    }
+
+    header: ToolBar {
+        id: mainToolBar
+        width: parent.width
+        RowLayout {
+            anchors.fill: parent
+            spacing: 0
+            ToolButton { action: fileNewAction }
+            ToolButton { action: fileOpenAction }
+            ToolButton { action: fileSaveAction }
+            ToolButton { action: filePrintAction }
+            ToolSeparator {}
+            ToolButton {action: editUndoAction }
+            ToolButton {action: editRedoAction }
+            ToolSeparator {}
+            ToolButton {action: editCutAction }
+            ToolButton {action: editCopyAction }
+            ToolButton {action: editPasteAction }
+            ToolSeparator {}
+            ToolButton {action: formatBoldAction }
+            ToolButton {action: formatItalicAction }
+            ToolSeparator {}
+            ToolButton {action: formatLeftAlignAction }
+            ToolButton {action: formatRightAlignAction }
+            ToolButton {action: formatCenterAction }
+            ToolButton {action: formatJustifyAction }
+            ToolSeparator {}
+            ToolButton {action: formatLineSpacingAction }
+            ToolButton {action: formatParagraphSpacingAction }
+        }
+
+        Item {
+            Layout.fillWidth: true
+        }
+    }
+
+    footer: ToolBar {
+        id: secondaryToolBar
+        width: parent.width
+
+        RowLayout {
+            anchors.fill: parent
+
+            Text {
+                id: statusMessage
+                text: "Status Message"
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+
+    }
+
+
+    ActionHandler {
+        id: action
+
     }
 }
