@@ -104,6 +104,7 @@ ApplicationWindow {
         shortcut: "ctrl+b"
         icon.source: "icons/format-bold.svg"
         icon.name: "format-bold"
+        onTriggered: actionHandler.setBold(checked)
     }
 
     Action {
@@ -112,6 +113,7 @@ ApplicationWindow {
         shortcut: "ctrl+i"
         icon.source: "icons/format-italic.svg"
         icon.name: "format-italic"
+        onTriggered: actionHandler.setItalic(checked)
     }
 
     Action {
@@ -254,7 +256,7 @@ ApplicationWindow {
 
             Text {
                 id: statusMessage
-                text: "Status Message"
+                text: actionHandler.statusMessage
             }
 
             Item {
@@ -265,8 +267,11 @@ ApplicationWindow {
     }
 
 
-    ActionHandler {
-        id: action
+    signal boldTriggered()
+    signal italicTriggered()
 
+    ActionHandler {
+        id: actionHandler
     }
+
 }
