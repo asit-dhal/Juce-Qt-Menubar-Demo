@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "../JuceLibraryCode/JuceHeader.h"
 #include <string>
 
 enum class MenuEntry {
@@ -18,17 +19,17 @@ enum class MenuEntry {
     FileSave,
     FilePrint,
     FileExit,
-    
+
     EditUndo = 2000,
     EditRedo,
     EditCut,
     EditCopy,
     EditPaste,
     EditFormat,
-    
+
     HelpAbout = 3000,
     HelpAboutQt,
-    
+
     FormatBold = 4000,
     FormatItalic,
     FormatLeftAlign,
@@ -40,5 +41,5 @@ enum class MenuEntry {
 };
 
 std::string menuEntryToString(MenuEntry entry);
-std::string menuEntryToIconName(MenuEntry entry);
+Drawable* menuEntryToDrawable(MenuEntry entry);
 int menuEntryToId(MenuEntry entry);

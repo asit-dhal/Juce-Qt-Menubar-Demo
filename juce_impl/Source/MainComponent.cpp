@@ -1,38 +1,39 @@
 #include "MainComponent.h"
+#include "AppIcons.h"
 
 namespace
 {
 
-MainComponent::Alignment menuEntryToAlignment(MenuEntry menuEntry)
-{
-    switch(menuEntry)
+    MainComponent::Alignment menuEntryToAlignment(MenuEntry menuEntry)
     {
-    case MenuEntry::FormatLeftAlign:
-        return MainComponent::Alignment::LeftAlign;
-    case MenuEntry::FormatRightAlign:
-        return MainComponent::Alignment::RightAlign;
-    case MenuEntry::FormatJustify:
-        return MainComponent::Alignment::Justify;
-    case MenuEntry::FormatCenter:
-        return MainComponent::Alignment::Center;
+        switch (menuEntry)
+        {
+        case MenuEntry::FormatLeftAlign:
+            return MainComponent::Alignment::LeftAlign;
+        case MenuEntry::FormatRightAlign:
+            return MainComponent::Alignment::RightAlign;
+        case MenuEntry::FormatJustify:
+            return MainComponent::Alignment::Justify;
+        case MenuEntry::FormatCenter:
+            return MainComponent::Alignment::Center;
+        }
     }
-}
-    
-MenuEntry alignmentToMenuEntry(MainComponent::Alignment alignment)
-{
-    switch(alignment)
+
+    MenuEntry alignmentToMenuEntry(MainComponent::Alignment alignment)
     {
-    case MainComponent::Alignment::LeftAlign:
-        return MenuEntry::FormatLeftAlign; 
-    case MainComponent::Alignment::RightAlign:
-        return MenuEntry::FormatRightAlign; 
-    case MainComponent::Alignment::Justify:
-        return MenuEntry::FormatJustify;
-    case MainComponent::Alignment::Center:
-        return MenuEntry::FormatCenter;
+        switch (alignment)
+        {
+        case MainComponent::Alignment::LeftAlign:
+            return MenuEntry::FormatLeftAlign;
+        case MainComponent::Alignment::RightAlign:
+            return MenuEntry::FormatRightAlign;
+        case MainComponent::Alignment::Justify:
+            return MenuEntry::FormatJustify;
+        case MainComponent::Alignment::Center:
+            return MenuEntry::FormatCenter;
+        }
     }
-}
-    
+
 }
 
 MainComponent::MainComponent() : menuBar(this), m_factory(this)
@@ -40,7 +41,7 @@ MainComponent::MainComponent() : menuBar(this), m_factory(this)
     addAndMakeVisible(&menuBar);
     addAndMakeVisible(&m_toolbar);
     addAndMakeVisible(&statusBarLabel);
-    
+
     setSize (600, 400);
 
     PropertiesFile::Options options;
@@ -54,11 +55,11 @@ MainComponent::MainComponent() : menuBar(this), m_factory(this)
     m_italicFormatFlag = props->getBoolValue("italic-format", false);
     m_boldFormatFlag = props->getBoolValue("bold-format", false);
     m_alignment = static_cast<Alignment>(props->getIntValue("alignment", 0));
-        
+
     setApplicationCommandManagerToWatch(&m_commandManager);
     m_commandManager.registerAllCommandsForTarget(this);
     addKeyListener(m_commandManager.getKeyMappings());
-    
+
     m_toolbar.addDefaultItems(m_factory);
 }
 
@@ -82,7 +83,7 @@ void MainComponent::resized()
 {
     auto const menubarHeight = 25;
     auto const toolbarHeight = 40;
-    
+
     auto area = getLocalBounds();
     menuBar.setBounds(area.removeFromTop(menubarHeight));
     m_toolbar.setBounds(area.removeFromTop(toolbarHeight));
@@ -98,7 +99,7 @@ StringArray MainComponent::getMenuBarNames()
 PopupMenu MainComponent::getMenuForIndex(int index, const String& name)
 {
     PopupMenu menu;
-    
+
     if (name == "File")
     {
         menu.addCommandItem (&m_commandManager, menuEntryToId(MenuEntry::FileNew));
@@ -114,12 +115,12 @@ PopupMenu MainComponent::getMenuForIndex(int index, const String& name)
         menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditUndo));
         menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditRedo));
         menu.addSeparator();
-        
+
         menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditCut));
         menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditCopy));
         menu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::EditPaste));
         menu.addSeparator();
-        
+
         PopupMenu formatSubMenu;
         formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatBold));
         formatSubMenu.addCommandItem(&m_commandManager, menuEntryToId(MenuEntry::FormatItalic));
@@ -139,7 +140,7 @@ PopupMenu MainComponent::getMenuForIndex(int index, const String& name)
         menu.addItem(menuEntryToId(MenuEntry::HelpAbout), menuEntryToString(MenuEntry::HelpAbout));
         menu.addItem(menuEntryToId(MenuEntry::HelpAboutQt), menuEntryToString(MenuEntry::HelpAboutQt));
     }
-    
+
     return menu;
 }
 
@@ -169,7 +170,7 @@ ApplicationCommandTarget* MainComponent::getNextCommandTarget()
 
 void MainComponent::getAllCommands(Array<CommandID>& c)
 {
-    Array<CommandID> commands { 
+    Array<CommandID> commands {
         menuEntryToId(MenuEntry::FileNew),
         menuEntryToId(MenuEntry::FileOpen),
         menuEntryToId(MenuEntry::FileSave),
@@ -323,7 +324,7 @@ bool MainComponent::perform(const InvocationInfo& info)
     case MenuEntry::FormatCenter:
         onAlignmentChanged(info.commandID);
         statusBarLabel.setText("Edit->Format->Center invoked", dontSendNotification);
-        break;    
+        break;
     default:
         Logger::getCurrentLogger()->writeToLog("Could not perform");
         return false;
@@ -354,7 +355,7 @@ void MainComponent::onAlignmentChanged(CommandID commandID)
 {
     Alignment desiredAlignment = menuEntryToAlignment(static_cast<MenuEntry>(commandID));
     MenuEntry currMenuEntry = alignmentToMenuEntry(m_alignment);
-    
+
     if (m_alignment != desiredAlignment)
     {
         // check the desired alignment
@@ -362,16 +363,16 @@ void MainComponent::onAlignmentChanged(CommandID commandID)
         ApplicationCommandInfo desiredResult(commandID);
         getCommandInfo(commandID, desiredResult);
         desiredResult.setTicked(true);
-        
+
         // uncheck the previous alignment
         Logger::outputDebugString ("Unchecking Previous Menu Entry: " + menuEntryToString(currMenuEntry));
         ApplicationCommandInfo previousResult(menuEntryToId(currMenuEntry));
         getCommandInfo(menuEntryToId(currMenuEntry), previousResult);
         previousResult.setTicked(false);
-        
+
         m_alignment = desiredAlignment;
     }
-    
+
 }
 
 void MainComponent::mouseDown(const MouseEvent & e)
@@ -419,13 +420,13 @@ void MainComponent::AppToolbarItemFactory::getAllToolbarItemIds(Array<int>& ids)
     ids.add(menuEntryToId(MenuEntry::FileOpen));
     ids.add(menuEntryToId(MenuEntry::FileSave));
     ids.add(menuEntryToId(MenuEntry::FilePrint));
-    
+
     ids.add(menuEntryToId(MenuEntry::EditUndo));
     ids.add(menuEntryToId(MenuEntry::EditRedo));
     ids.add(menuEntryToId(MenuEntry::EditCut));
     ids.add(menuEntryToId(MenuEntry::EditCopy));
     ids.add(menuEntryToId(MenuEntry::EditPaste));
-        
+
     ids.add(menuEntryToId(MenuEntry::FormatBold));
     ids.add(menuEntryToId(MenuEntry::FormatItalic));
 
@@ -435,7 +436,7 @@ void MainComponent::AppToolbarItemFactory::getAllToolbarItemIds(Array<int>& ids)
     //ids.add(menuEntryToId(MenuEntry::FormatCenter));
     //ids.add(menuEntryToId(MenuEntry::FormatSetLineSpacing));
     //ids.add(menuEntryToId(MenuEntry::FormatSetParagraphSpacing));
-    
+
     ids.add (separatorBarId);
     ids.add (spacerId);
     ids.add (flexibleSpacerId);
@@ -448,14 +449,14 @@ void MainComponent::AppToolbarItemFactory::getDefaultItemSet(Array<int>& ids)
     ids.add(menuEntryToId(MenuEntry::FileSave));
     ids.add(menuEntryToId(MenuEntry::FilePrint));
     ids.add (separatorBarId);
-    
+
     ids.add(menuEntryToId(MenuEntry::EditUndo));
     ids.add(menuEntryToId(MenuEntry::EditRedo));
     ids.add(menuEntryToId(MenuEntry::EditCut));
     ids.add(menuEntryToId(MenuEntry::EditCopy));
     ids.add(menuEntryToId(MenuEntry::EditPaste));
     ids.add (separatorBarId);
-    
+
     ids.add(menuEntryToId(MenuEntry::FormatBold));
     ids.add(menuEntryToId(MenuEntry::FormatItalic));
 
@@ -472,66 +473,46 @@ ToolbarItemComponent* MainComponent::AppToolbarItemFactory::createItem(int itemI
     switch(static_cast<MenuEntry>(itemId))
     {
     case MenuEntry::FileNew:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FileNew), menuEntryToIconName(MenuEntry::FileNew));
+        return createButtonFromImage(itemId, MenuEntry::FileNew);
     case MenuEntry::FileOpen:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FileOpen), menuEntryToIconName(MenuEntry::FileOpen));
+        return createButtonFromImage(itemId, MenuEntry::FileOpen);
     case MenuEntry::FileSave:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FileSave), menuEntryToIconName(MenuEntry::FileSave));
+        return createButtonFromImage(itemId, MenuEntry::FileSave);
     case MenuEntry::FilePrint:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FilePrint), menuEntryToIconName(MenuEntry::FilePrint));
-        
+        return createButtonFromImage(itemId, MenuEntry::FilePrint);
+
     case MenuEntry::EditUndo:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditUndo), menuEntryToIconName(MenuEntry::EditUndo));
+        return createButtonFromImage(itemId, MenuEntry::EditUndo);
     case MenuEntry::EditRedo:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditRedo), menuEntryToIconName(MenuEntry::EditRedo));
+        return createButtonFromImage(itemId, MenuEntry::EditRedo);
     case MenuEntry::EditCut:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditCut), menuEntryToIconName(MenuEntry::EditCut));
+        return createButtonFromImage(itemId, MenuEntry::EditCut);
     case MenuEntry::EditCopy:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditCopy), menuEntryToIconName(MenuEntry::EditCopy));
+        return createButtonFromImage(itemId, MenuEntry::EditCopy);
     case MenuEntry::EditPaste:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::EditPaste), menuEntryToIconName(MenuEntry::EditPaste));
-    
+        return createButtonFromImage(itemId, MenuEntry::EditPaste);
+
     case MenuEntry::FormatBold:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatBold), menuEntryToIconName(MenuEntry::FormatBold));
+        return createButtonFromImage(itemId, MenuEntry::FormatBold);
     case MenuEntry::FormatItalic:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatItalic), menuEntryToIconName(MenuEntry::FormatItalic));
-    
+        return createButtonFromImage(itemId, MenuEntry::FormatItalic);
+
     case MenuEntry::FormatLeftAlign:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatLeftAlign), menuEntryToIconName(MenuEntry::FormatLeftAlign));
+        return createButtonFromImage(itemId, MenuEntry::FormatLeftAlign);
     case MenuEntry::FormatRightAlign:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatRightAlign), menuEntryToIconName(MenuEntry::FormatRightAlign));
+        return createButtonFromImage(itemId, MenuEntry::FormatRightAlign);
     case MenuEntry::FormatJustify:
-        return createButtonFromZipFileSVG(itemId, menuEntryToString(MenuEntry::FormatJustify), menuEntryToIconName(MenuEntry::FormatJustify));
+        return createButtonFromImage(itemId, MenuEntry::FormatJustify);
     }
-    
-    return nullptr; 
+
+    return nullptr;
 }
 
 
-ToolbarButton* MainComponent::AppToolbarItemFactory::createButtonFromZipFileSVG(const int itemId, const String& text, const String& filename)
+ToolbarButton* MainComponent::AppToolbarItemFactory::createButtonFromImage(const int itemId, MenuEntry entry)
 {
-    if (m_iconsFromZipFile.size() == 0)
-    {
-        auto assetsDir = File::getSpecialLocation(File::currentExecutableFile);
-        auto resourceFile = assetsDir.getParentDirectory().getChildFile("icons.zip");
-        jassert(resourceFile.existsAsFile());
-        ZipFile icons (resourceFile);
-        for(auto i = 0; i < icons.getNumEntries(); ++i)
-        {
-            std::unique_ptr<InputStream> svgFileStream(icons.createStreamForEntry(i));
-            if (svgFileStream.get() != nullptr)
-            {
-                Logger::getCurrentLogger()->writeToLog("icon filename: " + icons.getEntry(i)->filename);
-                m_iconNames.add(icons.getEntry(i)->filename);
-                m_iconsFromZipFile.add(Drawable::createFromImageDataStream(*svgFileStream));
-            }
-        }
-    }
-    
-    Logger::getCurrentLogger()->writeToLog("Creating button for: " + filename);
-    auto indexOfItem = m_iconNames.indexOf(filename);
-    jassert(indexOfItem != -1);
-    auto* image = m_iconsFromZipFile[indexOfItem]->createCopy();
+    String text = menuEntryToString(entry);
+    auto* image = menuEntryToDrawable(entry);
     auto* button = new ToolbarButton(itemId, text, image, 0);
     button->onClick = [this, itemId=itemId](){ m_mainComponent->onToolbarButtonClick(itemId); };
     return button;
